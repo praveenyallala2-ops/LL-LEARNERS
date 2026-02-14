@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI Curriculum Studio</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body{
+    height:100vh;
+    overflow:hidden;
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #111827, #0f172a);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    color:white;
+}
+
+@keyframes gradientBG {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.header{
+    padding:20px 40px;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:1px;
+    background:linear-gradient(90deg,#3b82f6,#06b6d4);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.container{
+    display:flex;
+    gap:30px;
+    width:95%;
+    margin:20px auto;
+    height:85vh;
+}
+
+.glass{
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:30px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+    overflow-y:auto;
+}
+
+.left{
+    width:35%;
+}
+
+.right{
+    width:65%;
+}
+
+h2{
+    margin-bottom:20px;
+    font-weight:600;
+}
+
+.label{
+    font-size:13px;
+    margin-bottom:6px;
+    opacity:0.8;
+}
+
+input, select{
+    width:100%;
+    padding:10px;
+    margin-bottom:18px;
+    border-radius:8px;
+    border:none;
+    background:rgba(255,255,255,0.08);
+    color:rgb(30, 29, 29);
+}
+
+input::placeholder{
+    color:#bbb;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.generate-btn{
+    background:linear-gradient(90deg,#3b82f6,#06b6d4);
+    color:white;
+}
+
+.generate-btn:hover:not(:disabled){
+    transform:scale(1.05);
+    box-shadow:0 0 15px #3b82f6;
+}
+
+.next-btn{
+    margin-top:20px;
+    background:linear-gradient(90deg,#06b6d4,#3b82f6);
+}
+
+button:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+}
+
+#outputBox{
+    white-space:pre-wrap;
+    font-size:14px;
+    line-height:1.6;
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">⚡ AI Curriculum Studio</div>
+
+<div class="container">
+
+    <!-- LEFT PANEL -->
+    <div class="glass left">
+        <h2>Blueprint Settings</h2>
+
+        <div class="label">Educational Level</div>
+        <select id="education_level">
+            <option value="">Select Level</option>
+            <option>Pre University</option>
+            <option>Under Graduate</option>
+            <option>Skill-Based / Professional</option>
+            <option>Post Graduate</option>
+            <option>Professional Degrees</option>
+        </select>
+
+        <div class="label">Skill / Course Name</div>
+        <input type="text" id="skill_name" placeholder="e.g. AI Engineering">
+
+        <div class="label">Number of Semesters</div>
+        <input type="number" id="num_semesters">
+
+        <div class="label">Weekly Hours</div>
+        <input type="number" id="weekly_hours">
+
+        <div class="label">Industry Focus</div>
+        <input type="text" id="industry_focus">
+
+        <button id="generateBtn" class="generate-btn" disabled>
+            Generate Blueprint
+        </button>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="glass right">
+        <h2>Generated Curriculum</h2>
+
+        <div id="outputBox"></div>
+
+        <button id="nextBtn" class="next-btn" disabled>
+            Proceed to Export
+        </button>
+    </div>
+
+</div>
+
+<script>
+const generateBtn = document.getElementById("generateBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+const inputs = [
+    education_level,
+    skill_name,
+    num_semesters,
+    weekly_hours,
+    industry_focus
+];
+
+function checkInputs(){
+    let filled = true;
+    inputs.forEach(i=>{
+        if(i.value.trim() === "") filled = false;
+    });
+    generateBtn.disabled = !filled;
+}
+
+inputs.forEach(i=>{
+    i.addEventListener("input",checkInputs);
+    i.addEventListener("change",checkInputs);
+});
+
+generateBtn.addEventListener("click", function(){
+
+    generateBtn.disabled = true;
+    generateBtn.innerText = "Generating...";
+    nextBtn.disabled = true;
+
+    outputBox.innerText = "AI Engine Running...\nPlease wait.";
+
+    fetch("/generate", {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({
+            education_level: education_level.value,
+            skill_name: skill_name.value,
+            num_semesters: num_semesters.value,
+            weekly_hours: weekly_hours.value,
+            industry_focus: industry_focus.value
+        })
+    })
+    .then(res=>{
+        if(!res.ok) throw new Error();
+        return res.json();
+    })
+    .then(data=>{
+        outputBox.innerText = data.curriculum;
+        generateBtn.disabled = false;
+        generateBtn.innerText = "Generate Blueprint";
+        nextBtn.disabled = false;
+    })
+    .catch(()=>{
+        outputBox.innerText = "AI Engine Error. Try again.";
+        generateBtn.disabled = false;
+        generateBtn.innerText = "Generate Blueprint";
+    });
+});
+
+nextBtn.addEventListener("click", ()=>{
+    window.location.href="/branding";
+});
+</script>
+
+</body>
+</html>

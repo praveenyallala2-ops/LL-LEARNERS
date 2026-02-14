@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI Curriculum Studio - Export</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body{
+    height:100vh;
+    overflow:hidden;
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #111827, #0f172a);
+    background-size: 400% 400%;
+    animation: gradientBG 12s ease infinite;
+    color:white;
+}
+
+@keyframes gradientBG {
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+}
+
+.header{
+    padding:20px 40px;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:1px;
+    background:linear-gradient(90deg,#3b82f6,#06b6d4);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.container{
+    width:50%;
+    margin:60px auto;
+}
+
+.glass{
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:16px;
+    padding:40px;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+
+h2{
+    margin-bottom:25px;
+    font-weight:600;
+}
+
+.label{
+    font-size:13px;
+    margin-bottom:6px;
+    opacity:0.8;
+}
+
+input{
+    width:100%;
+    padding:10px;
+    margin-bottom:18px;
+    border-radius:8px;
+    border:none;
+    background:rgba(255,255,255,0.08);
+    color:white;
+}
+
+input::placeholder{
+    color:#bbb;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    font-weight:600;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.export-btn{
+    background:linear-gradient(90deg,#3b82f6,#06b6d4);
+    color:white;
+}
+
+.export-btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #3b82f6;
+}
+
+.back-btn{
+    margin-top:20px;
+    text-align:center;
+    cursor:pointer;
+    color:#06b6d4;
+    font-size:14px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">📄 AI Curriculum Export</div>
+
+<div class="container">
+    <div class="glass">
+
+        <h2>Institution Branding</h2>
+
+        <form action="/generate-pdf" method="POST" enctype="multipart/form-data">
+
+            <div class="label">Institution Name</div>
+            <input type="text" name="institution_name" placeholder="Enter Institution Name" required>
+
+            <div class="label">Upload Logo (Optional)</div>
+            <input type="file" name="logo">
+
+            <button type="submit" class="export-btn">
+                Generate PDF
+            </button>
+
+        </form>
+
+        <div class="back-btn" onclick="goBack()">
+            ← Back to Generator
+        </div>
+
+    </div>
+</div>
+
+<script>
+function goBack(){
+    window.location.href = "/";
+}
+</script>
+
+</body>
+</html>
